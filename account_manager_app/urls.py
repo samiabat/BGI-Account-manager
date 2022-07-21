@@ -2,6 +2,12 @@
 from django.urls import path
 from . import views
 
+from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 urlpatterns = [
     path('sectors/', views.sectorAPI),
     path('sectors/<str:pk>/', views.sectorAPI),
@@ -11,4 +17,7 @@ urlpatterns = [
     path('roles/<str:pk>/', views.roleAPI),
     path('employeeSectors/', views.employeeSectorAPI),
     path('employeeSectors/<str:pk>/', views.employeeSectorAPI),
+    
+    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

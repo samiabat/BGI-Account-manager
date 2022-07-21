@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
+from django.contrib.auth.hashers import make_password
 
 from .models import Sector, Employee, EmployeeSector, EmployeeRole, Role
 from .serializers import SectorSerializer, EmployeeSerializer, EmployeeSectorSerializer, EmployeeRoleSerializer, RoleSerializer
@@ -85,14 +86,15 @@ def employeeAPI(request, pk=-1):
                 return JsonResponse(responce, status = 404,  safe=False) 
         
     elif request.method == "POST":
-        sector_data = JSONParser().parse(request)
+        employee_data = JSONParser().parse(request)
         try :
-            other_sector = Employee.objects.get(name = sector_data["name"])
-            if other_sector:
+            other_employee = Employee.objects.get(name = employee_data["name"])
+            if other_employee:
                 responce = {"message": "The Employee Name Already Exist!"}
                 return JsonResponse(message, status = 400,  safe=False)
         except:
-            employee_serializer = EmployeeSerializer(data=sector_data)
+            employee_data['password'] = make_password(employee_data["password"])
+            employee_serializer = EmployeeSerializer(data=employee_data)
             if employee_serializer.is_valid():
                 employee_serializer.save()
                 message = {"message":"Employee Registered Sucessfully!"}
@@ -104,6 +106,7 @@ def employeeAPI(request, pk=-1):
         employee_data = JSONParser().parse(request)
         try:
             employee = Sector.objects.get(id = pk)
+            employee_data['password'] = make_password(employee_data["password"])
             employee_serializer = SectorSerializer(employee, data=employee_data)
             if employee_serializer.is_valid():
                 employee_serializer.save()
@@ -127,6 +130,7 @@ def employeeAPI(request, pk=-1):
 @csrf_exempt
 @api_view (['GET', 'POST', 'DELETE', 'PUT'])
 def roleAPI(request, pk=-1):
+    
     if request.method == "GET":
         if pk==-1:
             roles = Role.objects.all()
@@ -143,6 +147,7 @@ def roleAPI(request, pk=-1):
                 return JsonResponse(responce, status = 404,  safe=False) 
         
     elif request.method == "POST":
+        
         role_data = JSONParser().parse(request)
         try :
             other_role = Sector.objects.get(name = role_data["name"])
