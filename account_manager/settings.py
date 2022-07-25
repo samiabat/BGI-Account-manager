@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'account_manager.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'account_mngt',
+        'NAME': 'BGIInfo',
         'USER': 'samuel',
         'PASSWORD': 'bosena',
         'HOST': 'localhost',

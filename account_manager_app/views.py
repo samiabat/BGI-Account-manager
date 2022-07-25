@@ -4,8 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.hashers import make_password
 
-from .models import Sector, Employee, EmployeeSector, EmployeeRole, Role
-from .serializers import SectorSerializer, EmployeeSerializer, EmployeeSectorSerializer, EmployeeRoleSerializer, RoleSerializer
+from .models import Sector, Employee, EmployeeSector, Role
+from .serializers import SectorSerializer, EmployeeSerializer, EmployeeSectorSerializer, RoleSerializer
 
 
 @csrf_exempt
@@ -13,7 +13,7 @@ from .serializers import SectorSerializer, EmployeeSerializer, EmployeeSectorSer
 def sectorAPI(request, pk=-1):
     if request.method == "GET":
         if pk==-1:
-            sectors = Sector.objects.all()
+            sectors = Sector.objects.all().order_by('-created_date')
             sectors_serializer = SectorSerializer(sectors, many=True)
             return JsonResponse(sectors_serializer.data, status = 200, safe=False)
         else:
@@ -130,7 +130,6 @@ def employeeAPI(request, pk=-1):
 @csrf_exempt
 @api_view (['GET', 'POST', 'DELETE', 'PUT'])
 def roleAPI(request, pk=-1):
-    
     if request.method == "GET":
         if pk==-1:
             roles = Role.objects.all()
