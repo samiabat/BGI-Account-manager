@@ -88,12 +88,12 @@ def employeeAPI(request, pk=-1):
     elif request.method == "POST":
         employee_data = JSONParser().parse(request)
         try :
-            other_employee = Employee.objects.get(name = employee_data["name"])
+            other_employee = Employee.objects.get(username = employee_data["username"])
             if other_employee:
                 responce = {"message": "The Employee Name Already Exist!"}
                 return JsonResponse(message, status = 400,  safe=False)
         except:
-            employee_data['password'] = make_password(employee_data["password"])
+            # employee_data['password'] = make_password(employee_data["password"])
             employee_serializer = EmployeeSerializer(data=employee_data)
             if employee_serializer.is_valid():
                 employee_serializer.save()
@@ -104,19 +104,15 @@ def employeeAPI(request, pk=-1):
     
     elif request.method == "PUT":
         employee_data = JSONParser().parse(request)
-        try:
-            employee = Sector.objects.get(id = pk)
-            employee_data['password'] = make_password(employee_data["password"])
-            employee_serializer = SectorSerializer(employee, data=employee_data)
-            if employee_serializer.is_valid():
-                employee_serializer.save()
-                responce = {"message":"Data Updated Sucessfully!"}
-                return JsonResponse(message, status = 204, safe=False)
-            message = {"message": "Unable To Update!"}
-            return JsonResponse(message, status = 400, safe=False)
-        except:
-            message = {"message":"The Same ID Is Already In Use!"}
-            return JsonResponse(message, status = 400, safe=False)
+        employee = Employee.objects.get(id = pk)
+        # employee_data['password'] = make_password(employee_data["password"])
+        employee_serializer = EmployeeSerializer(employee, data=employee_data)
+        if employee_serializer.is_valid():
+            employee_serializer.save()
+            message = {"message":"Data Updated Sucessfully!"}
+            return JsonResponse(message, status = 204, safe=False)
+        message = {"message": "Unable To Update!"}
+        return JsonResponse(message, status = 400, safe=False)
     elif request.method == "DELETE":
         try:
             employee = Employee.objects.get(id=pk)
@@ -245,4 +241,12 @@ def employeeSectorAPI(request, pk=-1):
         except:
             message = {"message": "No Such Role!"}
             return JsonResponse(message, status = 404, safe=False)
-    
+
+@csrf_exempt
+@api_view (['GET'])
+def stasticsAPI():
+    emplyee = Employee.objects.count()
+    sector = Sector.objects.count()
+    role = Role.objects.count()
+    stat = {"emplyee":emplyee, "sector": sector, "role": role}
+    return JsonResponse(stat, statuscode = 200, safe=False)
