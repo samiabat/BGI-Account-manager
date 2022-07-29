@@ -1,4 +1,3 @@
-from statistics import mode
 from django.db import models
 
 class Sector(models.Model):
@@ -54,9 +53,11 @@ class Employee(models.Model):
     deleted_by = models.CharField(max_length=50, blank=True, null=True)
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
-
-
-class EmployeeSector(models.Model):
-    sector_id = models.ForeignKey(Sector, on_delete=models.CASCADE)
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+class SectorRole(models.Model):
+    sector_id = models.ForeignKey(Sector, on_delete=models.SET_NULL, null=True)
+    role_id = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
+    time_stamp = models.DateTimeField(auto_now_add=True)
+class EmployeeSectorRole(models.Model):
+    employee_id = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
+    sector_role_id = models.ForeignKey(SectorRole, on_delete=models.SET_NULL, null=True)
     time_stamp = models.DateTimeField(auto_now_add=True)

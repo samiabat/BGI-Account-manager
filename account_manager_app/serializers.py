@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Sector, Employee, Role, EmployeeSector
+from .models import *
 
 class EmployeeSerializer(ModelSerializer):
     class Meta:
@@ -16,7 +16,11 @@ class RoleSerializer(ModelSerializer):
         model = Role
         fields = '__all__'
 
-class EmployeeSectorSerializer(ModelSerializer):
+class SectorRoleSerializer(ModelSerializer):
     class Meta:
-        model = EmployeeSector
+        model = SectorRole
+        fields = '__all__'
+class EmployeeSectorRoleSerializer(ModelSerializer):
+    class Meta:
+        model = EmployeeSectorRole
         fields = '__all__'

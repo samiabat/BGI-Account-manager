@@ -4,8 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.hashers import make_password
 
-from .models import Sector, Employee, EmployeeSector, Role
-from .serializers import SectorSerializer, EmployeeSerializer, EmployeeSectorSerializer, RoleSerializer
+from .models import Sector, Employee, SectorRole, Role, EmployeeSectorRole
+from .serializers import EmployeeSectorRoleSerializer, SectorRoleSerializer, SectorSerializer, EmployeeSerializer, RoleSerializer
 
 
 @csrf_exempt
@@ -185,45 +185,45 @@ def roleAPI(request, pk=-1):
         
 @csrf_exempt
 @api_view (['GET', 'POST', 'DELETE', 'PUT'])
-def employeeSectorAPI(request, pk=-1):
+def sectorRoleAPI(request, pk=-1):
     if request.method == "GET":
         if pk==-1:
-            employee_sectors = EmployeeSector.objects.all()
-            employee_sectors_serializer = EmployeeSectorSerializer(employee_sectors, many=True)
-            return JsonResponse(employee_sectors_serializer.data, status = 200, safe=False)
+            sectorRoles = SectorRole.objects.all()
+            sector_role_serializer = SectorRoleSerializer(sectorRoles, many=True)
+            return JsonResponse(sector_role_serializer.data, status = 200, safe=False)
         else:
             try:
-                employee_sector = EmployeeSector.objects.get(id=pk)
-                if employee_sector is not None:
-                    employee_sector_serializer = EmployeeSector(employee_sector)
-                    return JsonResponse(employee_sector_serializer.data, status = 200, safe=False)
+                sector_role = SectorRole.objects.get(id=pk)
+                if sector_role is not None:
+                    sector_role_serializer = SectorRole(sector_role)
+                    return JsonResponse(sector_role_serializer.data, status = 200, safe=False)
             except:
                 responce = {"message":"No Such employee sector!"}
                 return JsonResponse(responce, status = 404,  safe=False) 
         
     elif request.method == "POST":
-        employee_sector_data = JSONParser().parse(request)
+        sector_role_data = JSONParser().parse(request)
         try :
-            other_employee_sector_data = Sector.objects.get(name = employee_sector_data["name"])
-            if other_employee_sector_data:
+            other_sector_role_data = SectorRole.objects.get(name = sector_role_data["name"])
+            if other_sector_role_data:
                 responce = {"message": "The employee_sector Name Already Exist!"}
                 return JsonResponse(message, status = 400,  safe=False)
         except:
-            employee_sector_serializer = EmployeeSector(data=employee_sector_data)
-            if employee_sector_serializer.is_valid():
-                employee_sector_serializer.save()
+            sector_role_serializer = SectorRole(data=sector_role_data)
+            if sector_role_serializer.is_valid():
+                sector_role_serializer.save()
                 message = {"message":"employee_sector Register Sucessfully!"}
                 return JsonResponse(message, status=201, safe=False)
             message = {"message": "Failed To Register!"}
             return JsonResponse(message, status=400, safe=False)
     
     elif request.method == "PUT":
-        employee_sector_data = JSONParser().parse(request)
+        sector_role_data = JSONParser().parse(request)
         try:
-            employee_sector = EmployeeSector.objects.get(id = pk)
-            employee_sector_serializer = EmployeeSector(employee_sector, data=employee_sector_data)
-            if employee_sector_serializer.is_valid():
-                employee_sector_serializer.save()
+            sector_role = SectorRole.objects.get(id = pk)
+            sector_role_serializer = SectorRole(sector_role, data=sector_role_data)
+            if sector_role_serializer.is_valid():
+                sector_role_serializer.save()
                 responce = {"message":"Data Updated Sucessfully!"}
                 return JsonResponse(message, status = 204, safe=False)
             message = {"message": "Unable To Update!"}
@@ -233,14 +233,76 @@ def employeeSectorAPI(request, pk=-1):
             return JsonResponse(message, status = 401, safe=False)
     elif request.method == "DELETE":
         try:
-            employee_sector = EmployeeSector.objects.get(id=pk)
-            if employee_sector:
-                employee_sector.delete()
+            sector_role = SectorRole.objects.get(id=pk)
+            if sector_role:
+                sector_role.delete()
                 message = {"message": "Role Deleted Sucessfully!"}
                 return JsonResponse(message, status = 201,  safe=False)
         except:
             message = {"message": "No Such Role!"}
             return JsonResponse(message, status = 404, safe=False)
+
+
+        
+@csrf_exempt
+@api_view (['GET', 'POST', 'DELETE', 'PUT'])
+def employeeSectorRoleAPI(request, pk=-1):
+    if request.method == "GET":
+        if pk==-1:
+            employee_sector_roles = EmployeeSectorRole.objects.all()
+            employee_sector_role_serializer = EmployeeSectorRoleSerializer(employee_sector_roles, many=True)
+            return JsonResponse(employee_sector_role_serializer.data, status = 200, safe=False)
+        else:
+            try:
+                employee_sector_role = EmployeeSectorRole.objects.get(id=pk)
+                if employee_sector_role is not None:
+                    employee_sector_role_serializer = EmployeeSectorRole(employee_sector_role)
+                    return JsonResponse(employee_sector_role_serializer.data, status = 200, safe=False)
+            except:
+                responce = {"message":"No Such employee sector!"}
+                return JsonResponse(responce, status = 404,  safe=False) 
+        
+    elif request.method == "POST":
+        employee_sector_role = JSONParser().parse(request)
+        try :
+            other_employee_sector_role = EmployeeSectorRole.objects.get(name = employee_sector_role["name"])
+            if other_employee_sector_role:
+                responce = {"message": "The employee_sector Name Already Exist!"}
+                return JsonResponse(message, status = 400,  safe=False)
+        except:
+            employee_sector_role_serializer = EmployeeSectorRole(data=employee_sector_role)
+            if employee_sector_role_serializer.is_valid():
+                employee_sector_role_serializer.save()
+                message = {"message":"employee_sector Register Sucessfully!"}
+                return JsonResponse(message, status=201, safe=False)
+            message = {"message": "Failed To Register!"}
+            return JsonResponse(message, status=400, safe=False)
+    
+    elif request.method == "PUT":
+        employee_sector_role_data = JSONParser().parse(request)
+        try:
+            employee_sector_role = EmployeeSectorRole.objects.get(id = pk)
+            employee_sector_role_serializer = SectorRole(employee_sector_role, data=employee_sector_role_data)
+            if employee_sector_role_serializer.is_valid():
+                employee_sector_role_serializer.save()
+                responce = {"message":"Data Updated Sucessfully!"}
+                return JsonResponse(message, status = 204, safe=False)
+            message = {"message": "Unable To Update!"}
+            return JsonResponse(message, status = 401, safe=False)
+        except:
+            message = {"message":"The Same ID Is Already In Use!"}
+            return JsonResponse(message, status = 401, safe=False)
+    elif request.method == "DELETE":
+        try:
+            sector_role = SectorRole.objects.get(id=pk)
+            if sector_role:
+                sector_role.delete()
+                message = {"message": "Role Deleted Sucessfully!"}
+                return JsonResponse(message, status = 201,  safe=False)
+        except:
+            message = {"message": "No Such Role!"}
+            return JsonResponse(message, status = 404, safe=False)
+
 
 @csrf_exempt
 @api_view (['GET'])
