@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from datetime import *
+import os
 
 from django.conf import settings
 
@@ -28,7 +29,7 @@ SECRET_KEY = 'django-insecure-^t^pput_z$n!m*4lavh3#pcsx70_ez&qhz%kcm)s0sw1u%+mg6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,12 +84,8 @@ WSGI_APPLICATION = 'account_manager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'BGIInfo',
-        'USER': 'samuel',
-        'PASSWORD': 'bosena',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
